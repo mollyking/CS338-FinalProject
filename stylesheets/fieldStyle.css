@@ -8,6 +8,10 @@
   position: fixed;
   bottom: 100px;
   right:100px;
+  font-size: 200%;
+}
+.hidden { 
+  display: none 
 }
 
 .atBat{
@@ -21,7 +25,9 @@
   margin-right: auto;
 }
 
-
+.hitDialog{
+  font-size: 200%;
+}
 
 .fieldLayout{
   position: absolute;
@@ -42,6 +48,16 @@
   bottom:0;
 }
 
+.oneToTwo{
+  position: absolute;
+  margin:auto;
+  left:258px;
+  right:0;
+  top:0;
+  bottom:185px;
+  visibility:hidden;
+}
+
 .secondBase{
   position: absolute;
   margin:auto;
@@ -51,6 +67,16 @@
   bottom:340px;
 }
 
+.twoToThree{
+  position: absolute;
+  margin:auto;
+  left:0;
+  right:300px;
+  top:0;
+  bottom:218px;
+  visibility:hidden;
+}
+
 .thirdBase{
   position: absolute;
   margin:auto;
@@ -58,6 +84,16 @@
   right:490px;
   top:0;
   bottom:0;
+}
+
+.threeToFour{
+  position: absolute;
+  margin:auto;
+  left:0;
+  right:305px;
+  top:200px;
+  bottom:0;
+  visibility:hidden;
 }
 
 .homePlate{
@@ -75,17 +111,11 @@ table{
     border: 1px solid red;
 }
 
-div{
-	font-size: 200%;
-}
 
 input[type=checkbox] {
 	width:24px; height:24px;
 }
 
-input[type=radio] {
-	width:24px; height:24px;
-}
 
 button{
 	font-size: 75%;
