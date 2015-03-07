@@ -7,9 +7,25 @@ var onFirst = "Nobody on";
 var onSecond = "Nobody on";
 var onThird = "Nobody on";
 baseToSteal=0;
+var atBatStats = [];
+//playerId, inning, balls, strikes, out[K, 6-3, etc.], onBase[BB,S,D,T,HR],
+//stoleBase[2,23,234,etc]
 
 $(document).ready(function() {
 	$(function() {
+		$( "#tabs" ).tabs();
+		/*{
+      beforeLoad: function( event, ui ) {
+        ui.jqXHR.error(function() {
+          ui.panel.html(
+            "Couldn't load this tab. We'll try to fix this as soon as possible. " +
+            "If this wouldn't be a demo." ); 
+        });
+      }
+    });*/
+  //});
+
+	//$(function() {
 		hitDialog = $( "#hitDialog" ).dialog({
 			autoOpen: false,
 			height: 300,
