@@ -1,12 +1,12 @@
 .scoreBoard {
   position: fixed;
-  top: 100px;
+  top: 150px;
   left:100px;
 }
 
 .resultsTable{
   position: fixed;
-  bottom: 100px;
+  bottom: 50px;
   right:100px;
   font-size: 200%;
 }
@@ -16,7 +16,7 @@
 
 .atBat{
   position: fixed;
-  bottom: 100px;
+  bottom: 50px;
   left:100px;
 }
 
@@ -34,7 +34,7 @@
     margin: auto;
     left: 0; 
     right: 0;
-    top: 0;
+    top: 100px;
     bottom: 0; 
 	z-index: -1;
 }
@@ -50,7 +50,7 @@
   margin:auto;
   left:490px;
   right:0;
-  top:0;
+  top:100px;
   bottom:0;
 }
 
@@ -60,7 +60,7 @@
   left:258px;
   right:0;
   top:0;
-  bottom:185px;
+  bottom:95px;
   visibility:hidden;
 }
 
@@ -69,7 +69,7 @@
   margin:auto;
   left:0;
   right:0;
-  top:0;
+  top:100px;
   bottom:340px;
 }
 
@@ -79,7 +79,7 @@
   left:0;
   right:300px;
   top:0;
-  bottom:218px;
+  bottom:120px;
   visibility:hidden;
 }
 
@@ -88,7 +88,7 @@
   margin:auto;
   left:0;
   right:490px;
-  top:0;
+  top:100px;
   bottom:0;
 }
 
@@ -97,7 +97,7 @@
   margin:auto;
   left:0;
   right:305px;
-  top:200px;
+  top:300px;
   bottom:0;
   visibility:hidden;
 }
@@ -107,15 +107,41 @@
   margin:auto;
   left:0;
   right:0;
-  top:340px;
+  top:440px;
   bottom:0;
 }
 
 .outLabel{
   position: absolute;
-  top: 100px;
-  left: 120px;
-  font-size: 200%
+  top: 110px;
+  left: 110px;
+  font-size: 200%;
+  color: red;
+  font-weight: bold;
+}
+
+.toFirstLabel{
+  position: absolute;
+  top: 190px;
+  left: 180px;
+}
+
+.toSecondLabel{
+  position: absolute;
+  top: 90px;
+  left: 180px;
+}
+
+.toThirdLabel{
+  position: absolute;
+  top: 90px;
+  left: 80px;
+}
+
+.toHomeLabel{
+  position: absolute;
+  top: 190px;
+  left: 80px;
 }
 
 .playerData{

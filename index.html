@@ -25,6 +25,10 @@
 					<td>Away</td>
 					<td><span id="awayScore">0</span></td>
 				</tr>
+				<tr>
+					<td>Inning</td>
+					<td><span id="inning">1</span></td>
+				</tr>
 			</table>
 			<table class="atBat" border="1">
 				<tr>
@@ -83,6 +87,53 @@
 					</fieldset>
 				</form>
 			</div>
+			
+			<div id ="otherRunnerDialog" class="otherRunnerDialog">
+				<form>
+					<fieldset>
+						<div id="3rdRunner">
+							<select id="3rdOptions">
+								<option value="3">3rd</option>
+								<option value="4">Scored</option>
+								<option value="0">Out</option>
+							</select>
+							<label id="thirdBaseQuestion">Where is Player 0? (Was on 3rd base)</label><br><br>
+						</div>
+						<div id="2ndRunner">
+							<select id="2ndOptions">
+								<option value="2">2nd</option>
+								<option value="3">3rd</option>
+								<option value="4">Scored</option>
+								<option value="0">Out</option>
+							</select>
+							<label id="secondBaseQuestion">Where is Player 0? (Was on 2nd base)</label><br><br>
+						</div>
+						<div id="1stRunner">
+							<select id="1stOptions">
+								<option value="1">1st</option>
+								<option value="2">2nd</option>
+								<option value="3">3rd</option>
+								<option value="4">Scored</option>
+								<option value="0">Out</option>
+							</select>
+							<label id="firstBaseQuestion">Where is Player 0? (Was on 1st base)</label><br><br>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+			<!--<div id="otherRunnerDialog" class="otherRunnerDialog">
+				<form>
+					<fieldset>
+						<label id="otherRunnerQuestion">Where is Player 1? (Was on __ base)</label><br>
+						<input type="radio" name="otherRunner" id="1st">1st Base<br>
+						<input type="radio" name="otherRunner" id="2nd">2nd Base<br>
+						<input type="radio" name="otherRunner" id="3rd">3rd Base<br>
+						<input type="radio" name="otherRunner" id="scored">Scored<br>
+						<input type="radio" name="otherRunner" id="otherOut">Out
+						<input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+					</fieldset>
+				</form>
+			</div>-->
 		</div>
 		<div id="tab2">
 			<table id="inningSummary" class="inningSummary" border="1">

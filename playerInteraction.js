@@ -7,6 +7,8 @@ var awayScore = 0;
 var onFirst = -1;
 var onSecond = -1;
 var onThird = -1;
+var tempHitBase = 0;
+var tempOtherDialogBase = 0;
 baseToSteal=0;
 var atBatStats = [];
 
@@ -16,14 +18,14 @@ $(document).ready(function() {
 		
 		hitDialog = $( "#hitDialog" ).dialog({
 			autoOpen: false,
-			height: 300,
-			width: 350,
+			height: 250,
+			width: 250,
 			modal: true,
 			buttons: {
 				Okay: function() {
 				HitBall();
 				$(this).dialog("close");
-				NextBatter();
+				GetOtherBases();
 			},
 				Cancel: function() {
 					$(this).dialog( "close" );
@@ -33,8 +35,8 @@ $(document).ready(function() {
 		
 		stealDialog = $( "#stealDialog" ).dialog({
 			autoOpen: false,
-			height: 300,
-			width: 350,
+			height: 150,
+			width: 250,
 			modal: true,
 			buttons: {
 				Okay: function() {
@@ -48,6 +50,20 @@ $(document).ready(function() {
 			},
 		});
 		
+		otherRunnerDialog = $("#otherRunnerDialog").dialog({
+			autoOpen: false,
+			modal: true,
+			buttons:{
+				Okay: function(){
+					$(this).dialog("close");
+					OtherRunnerResults();
+					NextBatter();
+				},
+				Cancel: function(){
+					$(this).dialog("close");
+				}
+			},
+		});
 		
 		$("#actionButton").on("click", function() {
 			name = document.getElementById("playerName").innerText
@@ -91,6 +107,17 @@ $(document).ready(function() {
 
 
 function NextBatter(){
+	if(tempHitBase == 1){
+		onFirst = currentDataIndex;
+	}
+	
+	else if(tempHitBase == 2){
+		onSecond = currentDataIndex;
+	}
+	
+	else if(tempHitBase == 3){
+		onThird = currentDataIndex;
+	}
 	var $clickedOption = $("input[name=batterAction]:checked");
 	var id = $clickedOption.attr('id');
 	atBatStats[currentDataIndex].strikes = NumberOfStrikes();
@@ -102,10 +129,15 @@ function NextBatter(){
 	document.getElementById("strike1").checked=false;
 	document.getElementById("strike2").checked=false;
 	UpdatePlayersOnBase();
+	AddSummary(currentDataIndex);
+	AddSummary(onFirst);
+	AddSummary(onSecond);
+	AddSummary(onThird);
 	currentBatter++;
 	currentDataIndex++;
 	document.getElementById("playerName").innerText = "Player " + currentBatter;
-	AddSummary(0);
+	tempHitBase = 0;
+	tempOtherDialogBase = 0;
 }
 
 function NumberOfBalls(){
@@ -150,12 +182,14 @@ function StealBase(){
 	if(id == "safe"){
 		if(baseToSteal==2){
 			atBatStats[playerStealing].onSecond = "SB";
+			AddSummary(playerStealing);
 			onSecond = onFirst;
 			EmptyBase(1);
 			document.getElementById("secondBase").src = "occupied.jpg";
 		}
 		else if(baseToSteal ==3){
 			atBatStats[playerStealing].onThird = "SB";
+			AddSummary(playerStealing);
 			onThird = onSecond;
 			EmptyBase(2);
 			document.getElementById("thirdBase").src = "occupied.jpg";
@@ -163,6 +197,7 @@ function StealBase(){
 		
 		else if(baseToSteal == 4){
 			atBatStats[playerStealing].scored = "SB";
+			AddSummary(playerStealing);
 			onThird = -1;
 			EmptyBase(3);
 			homeScore++;
@@ -171,9 +206,131 @@ function StealBase(){
 	
 	else if(id == "gotOut"){
 		atBatStats[playerStealing].out = "SB"+baseToSteal;
+		AddSummary(playerStealing);
 		EmptyBase(baseToSteal-1);
 		RecordOut();
 		UpdatePlayersOnBase();
+	}
+}
+
+function EnableAllOptions(){
+	var thirdRunner = document.getElementById("3rdOptions");
+	var secondRunner = document.getElementById("2ndOptions");
+	var firstRunner = document.getElementById("1stOptions");
+	thirdRunner.options[0].disabled = false;
+	thirdRunner.options[1].disabled = false;
+	thirdRunner.options[2].disabled = false;
+	secondRunner.options[0].disabled = false;
+	secondRunner.options[1].disabled = false;
+	secondRunner.options[2].disabled = false;
+	secondRunner.options[3].disabled = false;
+	firstRunner.options[0].disabled = false;
+	firstRunner.options[1].disabled = false;
+	firstRunner.options[2].disabled = false;
+	firstRunner.options[3].disabled = false;
+	firstRunner.options[4].disabled = false;
+}
+
+function GetOtherBases(){
+	EnableAllOptions();
+	var countHidden=0;
+	var thirdRunner = document.getElementById("3rdRunner");
+	var secondRunner = document.getElementById("2ndRunner");
+	var firstRunner = document.getElementById("1stRunner");
+	thirdRunner.style.display="block";
+	secondRunner.style.display="block";
+	firstRunner.style.display="block";
+	
+	if(onThird==-1){
+		thirdRunner.style.display="none";
+		countHidden++;
+	}
+	if(onSecond==-1){
+		secondRunner.style.display="none";
+		countHidden++;
+	}
+	if(onFirst==-1){
+		firstRunner.style.display="none";
+		countHidden++;
+	}
+	
+	thirdRunner = document.getElementById("3rdOptions");
+	secondRunner = document.getElementById("2ndOptions");
+	firstRunner = document.getElementById("1stOptions");
+	
+	if(tempHitBase == 3){
+		thirdRunner.options[0].disabled = true;
+		secondRunner.options[0].disabled = true;
+		secondRunner.options[1].disabled = true;
+		firstRunner.options[0].disabled = true;
+		firstRunner.options[1].disabled = true;
+		firstRunner.options[2].disabled = true;
+	}
+	
+	else if (tempHitBase == 2){
+		secondRunner.options[0].disabled = true;
+		firstRunner.options[0].disabled = true;
+		firstRunner.options[1].disabled = true;
+	}
+	
+	else if (tempHitBase == 1){
+		firstRunner.options[0].disabled = true;
+	}
+	
+	if(countHidden!=3){
+		otherRunnerDialog.dialog("open");
+	}
+	
+	else{
+		NextBatter();
+	}
+}
+
+function OtherRunnerResults(){
+	if(document.getElementById("3rdRunner").style.display!="none"){
+		var thirdBase = document.getElementById("3rdOptions");
+		var thirdNewBase = thirdBase.options[thirdBase.selectedIndex].value;
+		UpdateBase(thirdNewBase, 3, onThird);
+	}
+	
+	if(document.getElementById("2ndRunner").style.display!="none"){
+		var secondBase = document.getElementById("2ndOptions");
+		var secondNewBase = secondBase.options[secondBase.selectedIndex].value;
+		UpdateBase(secondNewBase, 2, onSecond);
+	}
+	
+	if(document.getElementById("1stRunner").style.display!="none"){
+		var firstBase = document.getElementById("1stOptions");
+		var firstNewBase = firstBase.options[firstBase.selectedIndex].value;
+		UpdateBase(firstNewBase, 1, onFirst);
+	}
+}
+
+function UpdateBase(selected, base, onBase){
+	if(selected == 0){
+		atBatStats[onBase].out = atBatStats[currentDataIndex].playerId;
+		EmptyBase(base);
+		RecordOut();
+	}
+	
+	else if(selected == 2){
+		if (atBatStats[onBase].onSecond == ""){
+			atBatStats[onBase].onSecond = atBatStats[currentDataIndex].playerId;
+			AddSummary(onBase);
+			onSecond = onBase;
+			EmptyBase(base);
+		}
+	}
+	else if(selected == 3){
+		if (atBatStats[onBase].onThird == ""){
+			atBatStats[onBase].onThird = atBatStats[currentDataIndex].playerId;
+			AddSummary(onBase);
+			onThird = onBase;
+			EmptyBase(base);
+		}
+	}
+	else if(selected == 4){
+		ScoreRun(onBase);
 	}
 }
 
@@ -182,27 +339,66 @@ function HitBall(){
 	var id = $clickedOption.attr('id');
 	if(id == "single"){
 		document.getElementById("firstBase").src = "occupied.jpg";
-		onFirst = currentDataIndex;
+		tempHitBase = 1;
+		atBatStats[currentDataIndex].onFirst = "S";
+		//onFirst = currentDataIndex;
 	}
 	
 	else if (id == "double"){
 		document.getElementById("secondBase").src = "occupied.jpg";
-		onSecond = currentDataIndex;
+		tempHitBase = 2;
+		atBatStats[currentDataIndex].onSecond = "D";
+		//onSecond = currentDataIndex;
 	}
 	
 	else if (id == "triple"){
 		document.getElementById("thirdBase").src = "occupied.jpg";
-		onThird = currentDataIndex;
+		tempHitBase = 3;
+		atBatStats[currentDataIndex].onThird = "T";
+		//onThird = currentDataIndex;
 	}
 	
 	else if (id == "homerun"){
+		if(onThird != -1){
+			ScoreRun(onThird);
+		}
+		
+		if(onSecond != -1){
+			ScoreRun(onSecond);
+		}
+		
+		if(onFirst != -1){
+			ScoreRun(onFirst);
+		}
+		
+		atBatStats[currentDataIndex].scored = "HR";
 		homeScore++;
 	}
 	
 	else if (id == "gotOut"){
+		atBatStats[currentDataIndex].out = "H";
 		RecordOut();
 	}
 }
+
+function ScoreRun(fromBase){
+	atBatStats[fromBase].scored = atBatStats[currentDataIndex].playerId;
+	homeScore++;
+	AddSummary(fromBase);
+	if(fromBase == onFirst){
+		EmptyBase(1);
+	}
+	
+	else if(fromBase == onSecond){
+		EmptyBase(2);
+	}
+	
+	else if(fromBase == onThird){
+		EmptyBase(3);
+	}
+}
+
+
 
 function EmptyBase(base){
 	if(base == 1){
@@ -244,6 +440,7 @@ function NewInning(){
 	EmptyBase(2);
 	EmptyBase(3);
 	outs=0;
+	currentDataIndex+=9;
 }
 
 function WalkBatter(){
@@ -262,6 +459,7 @@ function WalkBatter(){
 	if(src == "emptyBase.jpg"){
 		document.getElementById("secondBase").src = "occupied.jpg";
 		onSecond = onFirst;
+		atBatStats[onSecond].onSecond = atBatStats[currentDataIndex].playerId;
 		onFirst = currentDataIndex;
 		return;
 	}
@@ -273,6 +471,8 @@ function WalkBatter(){
 		document.getElementById("thirdBase").src = "occupied.jpg";
 		onThird = onSecond;
 		onSecond = onFirst;
+		atBatStats[onSecond].onSecond = atBatStats[currentDataIndex].playerId;
+		atBatStats[onThird].onThird = atBatStats[currentDataIndex].playerId;
 		onFirst = currentDataIndex;
 		return;
 	}
@@ -280,27 +480,35 @@ function WalkBatter(){
 	homeScore++;
 	onThird = onSecond;
 	onSecond = onFirst;
+	atBatStats[onSecond].onSecond = atBatStats[currentDataIndex].playerId;
+	atBatStats[onThird].onThird = atBatStats[currentDataIndex].playerId;
 	onFirst = currentDataIndex;
 }
 
 function UpdatePlayersOnBase(){
 	if (onFirst == -1){
 		document.getElementById("firstBase").title = "Nobody on";
+		document.getElementById("firstBase").src = "emptyBase.jpg";
 	}
 	else{
 		document.getElementById("firstBase").title = atBatStats[onFirst].playerName;
+		document.getElementById("firstBase").src = "occupied.jpg";
 	}
 	if (onSecond == -1){
 		document.getElementById("secondBase").title = "Nobody on";
+		document.getElementById("secondBase").src = "emptyBase.jpg";
 	}
 	else{
 		document.getElementById("secondBase").title = atBatStats[onSecond].playerName;
+		document.getElementById("secondBase").src = "occupied.jpg";
 	}
 	if (onThird == -1){
 		document.getElementById("thirdBase").title = "Nobody on";
+		document.getElementById("thirdBase").src = "emptyBase.jpg";
 	}
 	else{
 		document.getElementById("thirdBase").title = atBatStats[onThird].playerName;
+		document.getElementById("thirdBase").src = "occupied.jpg";
 	}
 
 	if (onThird != -1){
@@ -326,6 +534,7 @@ function UpdatePlayersOnBase(){
 		document.getElementById("threeToFour").style.visibility = "hidden";	
 	}
 	document.getElementById("homeScore").innerText = homeScore;
+	document.getElementById("inning").innterText = inning;
 }
 
 function GetFileName(filePath){
@@ -336,31 +545,34 @@ function GetFileName(filePath){
 }				
 
 function AddSummary(playerEntryIndex){
-	var newEntry = atBatStats[playerEntryIndex];
-	
-	$('#data' + playerEntryIndex).html("<img class='summaryField' src='fieldSummary.jpg'>");
-	//$('#data0').append($('<div/>',{innerText: newEntry.balls}));
-	$('#data'+ playerEntryIndex).append("<div>Balls: "+ newEntry.balls +"</div>");
-	$('#data'+ playerEntryIndex).append("<div>Strikes: "+ newEntry.strikes +"</div>");
-	$('#data'+ playerEntryIndex).append("<label class='outLabel'>" + newEntry.out + "</label>");
-	/*var tableRows = document.getElementById("inningSummary").rows;
-	var newEntry = atBatStats[playerEntryIndex];
-	
-	var tableCells = tableRows[0].cells;
-	var cell = tableCells[0];
-	
-	//var field = document.createElement("img");
-	//field.src = "summaryField.jpg";
-	
-	var batterBalls = document.createElement("div");
-	batterBalls.innerText = "Balls: " + newEntry.balls;
-	
-	var batterStrikes = document.createElement("div");
-	batterStrikes.innerText = "Strikes: " + newEntry.strikes;
-	
-//	cell.appendChild(field);
-	cell.appendChild(batterBalls);
-	cell.appendChild(batterStrikes);
-	document.getElementById("inningSummary").appendChild(cell);
-	debugger;*/
+	if(playerEntryIndex != -1){
+		var newEntry = atBatStats[playerEntryIndex];
+		
+		if(newEntry.scored != ""){
+			$('#data' + playerEntryIndex).html("<img class='summaryField' src='onHome.jpg'>");
+		}
+		
+		else if(newEntry.onThird != ""){
+			$('#data' + playerEntryIndex).html("<img class='summaryField' src='onThird.jpg'>");
+		}
+		
+		else if(newEntry.onSecond != ""){
+			$('#data' + playerEntryIndex).html("<img class='summaryField' src='onSecond.jpg'>");
+		}
+		
+		else if(newEntry.onFirst != ""){
+			$('#data' + playerEntryIndex).html("<img class='summaryField' src='onFirst.jpg'>");
+		}
+		
+		else{
+			$('#data' + playerEntryIndex).html("<img class='summaryField' src='fieldSummary.jpg'>");
+		}
+		$('#data'+ playerEntryIndex).append("<div>Balls: "+ newEntry.balls +"</div>");
+		$('#data'+ playerEntryIndex).append("<div>Strikes: "+ newEntry.strikes +"</div>");
+		$('#data'+ playerEntryIndex).append("<label class='outLabel'>" + newEntry.out + "</label>");
+		$('#data'+ playerEntryIndex).append("<label class='toFirstLabel'>" + newEntry.onFirst + "</label>");
+		$('#data'+ playerEntryIndex).append("<label class='toSecondLabel'>" + newEntry.onSecond + "</label>");
+		$('#data'+ playerEntryIndex).append("<label class='toThirdLabel'>" + newEntry.onThird + "</label>");
+		$('#data'+ playerEntryIndex).append("<label class='toHomeLabel'>" + newEntry.scored + "</label>");
+	}
 }
