@@ -14,12 +14,16 @@ var atBatStats = [];
 
 $(document).ready(function() {
 	$(function() {
-		$( "#tabs" ).tabs();
-		
+		//$( "#tabs" ).tabs();
+		$("#tabs").tabs().css({
+			'min-height': '620px',
+			'overflow': 'auto',
+			'z-index': '999'
+		});
 		hitDialog = $( "#hitDialog" ).dialog({
 			autoOpen: false,
-			height: 250,
-			width: 250,
+			height: 310,
+			width: 350,
 			modal: true,
 			buttons: {
 				Okay: function() {
@@ -35,8 +39,8 @@ $(document).ready(function() {
 		
 		stealDialog = $( "#stealDialog" ).dialog({
 			autoOpen: false,
-			height: 150,
-			width: 250,
+			height: 250,
+			width: 400,
 			modal: true,
 			buttons: {
 				Okay: function() {
@@ -52,6 +56,8 @@ $(document).ready(function() {
 		
 		otherRunnerDialog = $("#otherRunnerDialog").dialog({
 			autoOpen: false,
+			height: 310,
+			width: 350,
 			modal: true,
 			buttons:{
 				Okay: function(){
@@ -135,9 +141,17 @@ function NextBatter(){
 	AddSummary(onThird);
 	currentBatter++;
 	currentDataIndex++;
+	if(currentBatter > 9){
+		currentBatter = 1;
+		currentDataIndex = currentDataIndex-9;
+	}
 	document.getElementById("playerName").innerText = "Player " + currentBatter;
 	tempHitBase = 0;
 	tempOtherDialogBase = 0;
+	if(outs == 3){
+		outs = 0;
+		NewInning();
+	}
 }
 
 function NumberOfBalls(){
@@ -208,8 +222,12 @@ function StealBase(){
 		atBatStats[playerStealing].out = "SB"+baseToSteal;
 		AddSummary(playerStealing);
 		EmptyBase(baseToSteal-1);
-		RecordOut();
 		UpdatePlayersOnBase();
+		RecordOut();
+		if(outs == 3){
+			outs = 0;
+			NewInning();
+		}
 	}
 }
 
@@ -309,6 +327,7 @@ function OtherRunnerResults(){
 function UpdateBase(selected, base, onBase){
 	if(selected == 0){
 		atBatStats[onBase].out = atBatStats[currentDataIndex].playerId;
+		AddSummary(onBase);
 		EmptyBase(base);
 		RecordOut();
 	}
@@ -419,16 +438,12 @@ function EmptyBase(base){
 
 function RecordOut(){
 	outs++;
-	if (outs==3){
-		NewInning();
-	}
-	else{
+	if (outs!=3){
 		document.getElementById("out" + outs).checked=true;
 	}
 }
 
 function NewInning(){
-	inning++;
 	document.getElementById("out1").checked=false;
 	document.getElementById("out2").checked=false;
 	document.getElementById("ball1").checked=false;
@@ -440,10 +455,19 @@ function NewInning(){
 	EmptyBase(2);
 	EmptyBase(3);
 	outs=0;
-	currentDataIndex+=9;
+	for (i=0; i<9; i++){
+		name = document.getElementById("playerName").innerText
+		data = {playerId:currentDataIndex%9, playerName: "Player "+currentDataIndex%9, inning: inning, balls:0, strikes:0, out:"", onFirst:"", onSecond:"", onThird:"", scored:""};
+		atBatStats.push(data);
+		currentDataIndex++;
+	}
+	inning++;
+	document.getElementById("inning").innerText = inning;
+	UpdatePlayersOnBase();
 }
 
 function WalkBatter(){
+	debugger;
 	var src = document.getElementById("firstBase").src;
 	src = GetFileName(src);
 	
@@ -511,7 +535,13 @@ function UpdatePlayersOnBase(){
 		document.getElementById("thirdBase").src = "occupied.jpg";
 	}
 
-	if (onThird != -1){
+	if (onThird != -1 && onFirst != -1){
+		document.getElementById("threeToFour").style.visibility = "visible";
+		document.getElementById("oneToTwo").style.visibility = "visible";
+		document.getElementById("twoToThree").style.visibility = "hidden";
+	}
+	
+	else if (onThird != -1){
 		document.getElementById("threeToFour").style.visibility = "visible";
 		document.getElementById("oneToTwo").style.visibility = "hidden";
 		document.getElementById("twoToThree").style.visibility = "hidden";
@@ -522,6 +552,7 @@ function UpdatePlayersOnBase(){
 		document.getElementById("oneToTwo").style.visibility = "hidden";
 		document.getElementById("threeToFour").style.visibility = "hidden";
 	}
+	
 	else if (onFirst != -1){
 		document.getElementById("oneToTwo").style.visibility = "visible";
 		document.getElementById("twoToThree").style.visibility = "hidden";
@@ -534,7 +565,6 @@ function UpdatePlayersOnBase(){
 		document.getElementById("threeToFour").style.visibility = "hidden";	
 	}
 	document.getElementById("homeScore").innerText = homeScore;
-	document.getElementById("inning").innterText = inning;
 }
 
 function GetFileName(filePath){
