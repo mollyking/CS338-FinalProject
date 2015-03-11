@@ -68,8 +68,30 @@ $(document).ready(function() {
 				Cancel: function(){
 					$(this).dialog("close");
 				}
+			}
+		});
+		
+		
+		finishDialog = $( "#finishDialog" ).dialog({
+			autoOpen: false,
+			height: 310,
+			width: 350,
+			modal: true,
+			buttons: {
+				Okay: function() {
+					$("#gameDone").text("Thanks for playing!"); 
+					$("#yesFinished").css("display","none");
+					$("#noFinished").css("display","none");
+					$("#finishedButton").css("display","none");
+					$("#yesText").css("display","none");
+					$("#noText").css("display","none");
+			},
+				Cancel: function() {
+					$(this).dialog( "close" );
+				}
 			},
 		});
+		 
 		
 		$("#actionButton").on("click", function() {
 			name = document.getElementById("playerName").innerText
@@ -107,9 +129,25 @@ $(document).ready(function() {
 			baseToSteal=4;
 			stealDialog.dialog("open");
 		});
+		
+		$("#finishGame").on("click", function(){
+			finishDialog.dialog("open");
+		});
+		
 	});
 });
 
+function popup(mylink, windowname)
+{
+	if (! window.focus)return true;
+	var href;
+	if (typeof(mylink) == 'string')
+		href=mylink;
+	else
+		href=mylink.href;
+	window.open(href, windowname, 'width=400,height=400,scrollbars=yes');
+	return false;
+}
 
 
 function NextBatter(){
@@ -263,13 +301,22 @@ function GetOtherBases(){
 		thirdRunner.style.display="none";
 		countHidden++;
 	}
+	else{
+		document.getElementById("thirdBaseQuestion").innerHTML = "Where is " + atBatStats[onThird].playerName + "? (Was on 3rd base)";
+	}
 	if(onSecond==-1){
 		secondRunner.style.display="none";
 		countHidden++;
 	}
+	else{
+		document.getElementById("secondBaseQuestion").innerHTML = "Where is " + atBatStats[onSecond].playerName + "? (Was on 2nd base)";
+	}
 	if(onFirst==-1){
 		firstRunner.style.display="none";
 		countHidden++;
+	}
+	else{
+		document.getElementById("firstBaseQuestion").innerHTML = "Where is " + atBatStats[onFirst].playerName + "? (Was on 1st base)";
 	}
 	
 	thirdRunner = document.getElementById("3rdOptions");
@@ -277,22 +324,22 @@ function GetOtherBases(){
 	firstRunner = document.getElementById("1stOptions");
 	
 	if(tempHitBase == 3){
-		thirdRunner.options[0].disabled = true;
-		secondRunner.options[0].disabled = true;
+		thirdRunner.options[1].disabled = true;
 		secondRunner.options[1].disabled = true;
-		firstRunner.options[0].disabled = true;
+		secondRunner.options[2].disabled = true;
+		firstRunner.options[1].disabled = true;
+		firstRunner.options[2].disabled = true;
+		firstRunner.options[3].disabled = true;
+	}
+	
+	else if (tempHitBase == 2){
+		secondRunner.options[1].disabled = true;
 		firstRunner.options[1].disabled = true;
 		firstRunner.options[2].disabled = true;
 	}
 	
-	else if (tempHitBase == 2){
-		secondRunner.options[0].disabled = true;
-		firstRunner.options[0].disabled = true;
-		firstRunner.options[1].disabled = true;
-	}
-	
 	else if (tempHitBase == 1){
-		firstRunner.options[0].disabled = true;
+		firstRunner.options[1].disabled = true;
 	}
 	
 	if(countHidden!=3){
@@ -535,7 +582,7 @@ function UpdatePlayersOnBase(){
 		document.getElementById("thirdBase").src = "occupied.jpg";
 	}
 
-	if (onThird != -1 && onFirst != -1){
+	if (onThird != -1 && onFirst != -1 && onSecond == -1){
 		document.getElementById("threeToFour").style.visibility = "visible";
 		document.getElementById("oneToTwo").style.visibility = "visible";
 		document.getElementById("twoToThree").style.visibility = "hidden";

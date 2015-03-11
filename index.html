@@ -3,13 +3,11 @@
 <head>
 	<link rel="stylesheet" href="stylesheets/fieldStyle.css" type="text/css">
 	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/ui-lightness/jquery-ui.css" />
-	<!--<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">-->
-	<!--<link rel="stylesheet"href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/ui-lightness/jquery-ui.css" />-->
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="playerInteraction.js"></script>
 </head>
-<body>
+<body onLoad="popup('autopopup.html', 'ad')">
 	<div id="tabs">
 		<ul>
             <li><a href="#tab1">Current Play</a></li>
@@ -24,7 +22,7 @@
 				</tr>
 				<tr>
 					<td>Away</td>
-					<td><span id="awayScore">0</span></td>
+					<td><input type="text" maxlength="2" size="2" id="awayScore" value="0"/></td>
 				</tr>
 				<tr>
 					<td>Inning</td>
@@ -50,6 +48,22 @@
 				</tr>
 			</table>
 			<img class="fieldLayout" src="field.jpg" width="700" height="500">
+			
+			<button id="finishGame" class="finishGame">Game Finished</button>
+			
+			<div id="finishDialog" class="finishDialog">
+				<form>
+					<fieldset>
+						<label id="gameDone">Are you sure you want to end the game?</label><br>
+						<input type="radio" name="finished" id="yesFinished" value="Yes"/>
+						<label id="yesText">Yes</label><br>
+						<input type="radio" name="finished" id="noFinished" value="No"/>
+						<label id="noText">No</label><br>
+						<input id="finishedButton" type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+					</fieldset>
+				</form>
+			</div>
+			
 			<div class="resultsTable" name="actionForm">
 				<input type="radio" name="batterAction" value="walk" id="walk">Walk (BB)<br>
 				<input type="radio" name="batterAction" value="strikeout" id="strikeout">Strikeout (K) <br>
@@ -90,32 +104,32 @@
 			</div>
 			
 			<div id ="otherRunnerDialog" class="otherRunnerDialog">
-				<form>
+				<form id="validateForm">
 					<fieldset>
 						<div id="3rdRunner">
 							<select id="3rdOptions">
+								<option value="0">Out</option>
 								<option value="3">3rd</option>
 								<option value="4">Scored</option>
-								<option value="0">Out</option>
 							</select>
 							<label id="thirdBaseQuestion">Where is Player 0? (Was on 3rd base)</label><br><br>
 						</div>
 						<div id="2ndRunner">
 							<select id="2ndOptions">
+								<option value="0">Out</option>
 								<option value="2">2nd</option>
 								<option value="3">3rd</option>
 								<option value="4">Scored</option>
-								<option value="0">Out</option>
 							</select>
 							<label id="secondBaseQuestion">Where is Player 0? (Was on 2nd base)</label><br><br>
 						</div>
 						<div id="1stRunner">
 							<select id="1stOptions">
+								<option value="0">Out</option>
 								<option value="1">1st</option>
 								<option value="2">2nd</option>
 								<option value="3">3rd</option>
 								<option value="4">Scored</option>
-								<option value="0">Out</option>
 							</select>
 							<label id="firstBaseQuestion">Where is Player 0? (Was on 1st base)</label><br><br>
 						</div>
@@ -124,6 +138,7 @@
 			</div>
 		</div>
 		<div id="tab2">
+			<button id="helpMenu" class="helpMenu" onClick="window.open('helpMenu.html')">Help</button>
 			<table id="inningSummary" class="inningSummary" border="1">
 				<tr>
 					<th></th>
