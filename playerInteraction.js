@@ -1,3 +1,8 @@
+/*
+Molly King
+CS338 Final Project
+*/
+
 var currentBatter = 1;
 var inning = 1;
 var currentDataIndex=0;
@@ -10,16 +15,19 @@ var onThird = -1;
 var tempHitBase = 0;
 var tempOtherDialogBase = 0;
 baseToSteal=0;
+
+//Where all player information is stored
 var atBatStats = [];
 
 $(document).ready(function() {
 	$(function() {
-		//$( "#tabs" ).tabs();
 		$("#tabs").tabs().css({
 			'min-height': '620px',
 			'overflow': 'auto',
 			'z-index': '999'
 		});
+		
+		//popup when batter hits the ball
 		hitDialog = $( "#hitDialog" ).dialog({
 			autoOpen: false,
 			height: 310,
@@ -37,6 +45,7 @@ $(document).ready(function() {
 			},
 		});
 		
+		//popup when player steals the batter
 		stealDialog = $( "#stealDialog" ).dialog({
 			autoOpen: false,
 			height: 250,
@@ -54,6 +63,7 @@ $(document).ready(function() {
 			},
 		});
 		
+		//popup when a player hits and there's player(s) on base
 		otherRunnerDialog = $("#otherRunnerDialog").dialog({
 			autoOpen: false,
 			height: 310,
@@ -71,7 +81,7 @@ $(document).ready(function() {
 			}
 		});
 		
-		
+		//popup when game ends
 		finishDialog = $( "#finishDialog" ).dialog({
 			autoOpen: false,
 			height: 310,
@@ -92,7 +102,7 @@ $(document).ready(function() {
 			},
 		});
 		 
-		
+		//event listener when batter walks, strikesout, or hits
 		$("#actionButton").on("click", function() {
 			name = document.getElementById("playerName").innerText
 			data = {playerId:currentBatter, playerName: name, inning: inning, balls:0, strikes:0, out:"", onFirst:"", onSecond:"", onThird:"", scored:""};
@@ -115,6 +125,7 @@ $(document).ready(function() {
 			}
 		});
 		
+		//steal base listeners
 		$("#oneToTwo").on("click", function(){
 			baseToSteal=2;
 			stealDialog.dialog("open");
@@ -130,6 +141,7 @@ $(document).ready(function() {
 			stealDialog.dialog("open");
 		});
 		
+		//finish game listener
 		$("#finishGame").on("click", function(){
 			finishDialog.dialog("open");
 		});
@@ -137,6 +149,7 @@ $(document).ready(function() {
 	});
 });
 
+//welcome open dialog
 function popup(mylink, windowname)
 {
 	if (! window.focus)return true;
@@ -149,7 +162,7 @@ function popup(mylink, windowname)
 	return false;
 }
 
-
+//gets the next batter, resets balls/strikes, updates the summary tab with players on base and how they got there.
 function NextBatter(){
 	if(tempHitBase == 1){
 		onFirst = currentDataIndex;
@@ -217,6 +230,7 @@ function NumberOfStrikes(){
 	return strikeCount;
 }
 
+//Steal base, advances runner if safe or records out
 function StealBase(){
 	var $clickedOption = $("input[name=stealOutcome]:checked");
 	var id = $clickedOption.attr('id');
@@ -237,14 +251,14 @@ function StealBase(){
 			AddSummary(playerStealing);
 			onSecond = onFirst;
 			EmptyBase(1);
-			document.getElementById("secondBase").src = "occupied.jpg";
+			document.getElementById("secondBase").src= "images/occupied.jpg";
 		}
 		else if(baseToSteal ==3){
 			atBatStats[playerStealing].onThird = "SB";
 			AddSummary(playerStealing);
 			onThird = onSecond;
 			EmptyBase(2);
-			document.getElementById("thirdBase").src = "occupied.jpg";
+			document.getElementById("thirdBase").src= "images/occupied.jpg";
 		}
 		
 		else if(baseToSteal == 4){
@@ -269,6 +283,7 @@ function StealBase(){
 	}
 }
 
+//Enables all dropdown options in the dialog that asks where the other runners are
 function EnableAllOptions(){
 	var thirdRunner = document.getElementById("3rdOptions");
 	var secondRunner = document.getElementById("2ndOptions");
@@ -287,6 +302,7 @@ function EnableAllOptions(){
 	firstRunner.options[4].disabled = false;
 }
 
+//Asks where the other runners are after the batter hit the ball
 function GetOtherBases(){
 	EnableAllOptions();
 	var countHidden=0;
@@ -371,6 +387,7 @@ function OtherRunnerResults(){
 	}
 }
 
+//Adds the runner stats to the summary
 function UpdateBase(selected, base, onBase){
 	if(selected == 0){
 		atBatStats[onBase].out = atBatStats[currentDataIndex].playerId;
@@ -400,28 +417,26 @@ function UpdateBase(selected, base, onBase){
 	}
 }
 
+//records how they hit the ball
 function HitBall(){
 	var $clickedOption = $("input[name=hitOutcome]:checked");
 	var id = $clickedOption.attr('id');
 	if(id == "single"){
-		document.getElementById("firstBase").src = "occupied.jpg";
+		document.getElementById("firstBase").src= "images/occupied.jpg";
 		tempHitBase = 1;
 		atBatStats[currentDataIndex].onFirst = "S";
-		//onFirst = currentDataIndex;
 	}
 	
 	else if (id == "double"){
-		document.getElementById("secondBase").src = "occupied.jpg";
+		document.getElementById("secondBase").src= "images/occupied.jpg";
 		tempHitBase = 2;
 		atBatStats[currentDataIndex].onSecond = "D";
-		//onSecond = currentDataIndex;
 	}
 	
 	else if (id == "triple"){
-		document.getElementById("thirdBase").src = "occupied.jpg";
+		document.getElementById("thirdBase").src= "images/occupied.jpg";
 		tempHitBase = 3;
 		atBatStats[currentDataIndex].onThird = "T";
-		//onThird = currentDataIndex;
 	}
 	
 	else if (id == "homerun"){
@@ -447,6 +462,7 @@ function HitBall(){
 	}
 }
 
+//Updates score by one and emptys the base where the runner came from
 function ScoreRun(fromBase){
 	atBatStats[fromBase].scored = atBatStats[currentDataIndex].playerId;
 	homeScore++;
@@ -465,20 +481,20 @@ function ScoreRun(fromBase){
 }
 
 
-
+//Removes the player from the base
 function EmptyBase(base){
 	if(base == 1){
-		document.getElementById("firstBase").src = "emptyBase.jpg";
+		document.getElementById("firstBase").src= "images/emptyBase.jpg";
 		onFirst = -1;
 	}
 	
 	else if(base == 2){
-		document.getElementById("secondBase").src = "emptyBase.jpg";
+		document.getElementById("secondBase").src= "images/emptyBase.jpg";
 		onSecond = -1;
 	}
 	
 	else if(base == 3){
-		document.getElementById("thirdBase").src = "emptyBase.jpg";
+		document.getElementById("thirdBase").src= "images/emptyBase.jpg";
 		onThird= -1;
 	}
 }
@@ -490,6 +506,7 @@ function RecordOut(){
 	}
 }
 
+//updates new inning, resets balls, strikes, outs; gets the index for the next inning in the summary table
 function NewInning(){
 	document.getElementById("out1").checked=false;
 	document.getElementById("out2").checked=false;
@@ -513,13 +530,13 @@ function NewInning(){
 	UpdatePlayersOnBase();
 }
 
+//walk batter function
 function WalkBatter(){
-	debugger;
 	var src = document.getElementById("firstBase").src;
 	src = GetFileName(src);
 	
 	if(src == "emptyBase.jpg"){
-		document.getElementById("firstBase").src = "occupied.jpg";
+		document.getElementById("firstBase").src= "images/occupied.jpg";
 		onFirst = currentDataIndex;
 		return;
 	}
@@ -528,7 +545,7 @@ function WalkBatter(){
 	src = GetFileName(src);
 	
 	if(src == "emptyBase.jpg"){
-		document.getElementById("secondBase").src = "occupied.jpg";
+		document.getElementById("secondBase").src= "images/occupied.jpg";
 		onSecond = onFirst;
 		atBatStats[onSecond].onSecond = atBatStats[currentDataIndex].playerId;
 		onFirst = currentDataIndex;
@@ -539,7 +556,7 @@ function WalkBatter(){
 	src = GetFileName(src);
 	
 	if(src == "emptyBase.jpg"){
-		document.getElementById("thirdBase").src = "occupied.jpg";
+		document.getElementById("thirdBase").src= "images/occupied.jpg";
 		onThird = onSecond;
 		onSecond = onFirst;
 		atBatStats[onSecond].onSecond = atBatStats[currentDataIndex].playerId;
@@ -556,30 +573,31 @@ function WalkBatter(){
 	onFirst = currentDataIndex;
 }
 
+//Colors the base/updates the hover over who is on base text
 function UpdatePlayersOnBase(){
 	if (onFirst == -1){
 		document.getElementById("firstBase").title = "Nobody on";
-		document.getElementById("firstBase").src = "emptyBase.jpg";
+		document.getElementById("firstBase").src= "images/emptyBase.jpg";
 	}
 	else{
 		document.getElementById("firstBase").title = atBatStats[onFirst].playerName;
-		document.getElementById("firstBase").src = "occupied.jpg";
+		document.getElementById("firstBase").src= "images/occupied.jpg";
 	}
 	if (onSecond == -1){
 		document.getElementById("secondBase").title = "Nobody on";
-		document.getElementById("secondBase").src = "emptyBase.jpg";
+		document.getElementById("secondBase").src= "images/emptyBase.jpg";
 	}
 	else{
 		document.getElementById("secondBase").title = atBatStats[onSecond].playerName;
-		document.getElementById("secondBase").src = "occupied.jpg";
+		document.getElementById("secondBase").src= "images/occupied.jpg";
 	}
 	if (onThird == -1){
 		document.getElementById("thirdBase").title = "Nobody on";
-		document.getElementById("thirdBase").src = "emptyBase.jpg";
+		document.getElementById("thirdBase").src= "images/emptyBase.jpg";
 	}
 	else{
 		document.getElementById("thirdBase").title = atBatStats[onThird].playerName;
-		document.getElementById("thirdBase").src = "occupied.jpg";
+		document.getElementById("thirdBase").src= "images/occupied.jpg";
 	}
 
 	if (onThird != -1 && onFirst != -1 && onSecond == -1){
@@ -621,28 +639,30 @@ function GetFileName(filePath){
 	return name;
 }				
 
+
+//Updates the HTML for the summary table
 function AddSummary(playerEntryIndex){
 	if(playerEntryIndex != -1){
 		var newEntry = atBatStats[playerEntryIndex];
 		
 		if(newEntry.scored != ""){
-			$('#data' + playerEntryIndex).html("<img class='summaryField' src='onHome.jpg'>");
+			$('#data' + playerEntryIndex).html("<img class='summaryField' src= 'images/onHome.jpg'>");
 		}
 		
 		else if(newEntry.onThird != ""){
-			$('#data' + playerEntryIndex).html("<img class='summaryField' src='onThird.jpg'>");
+			$('#data' + playerEntryIndex).html("<img class='summaryField' src= 'images/onThird.jpg'>");
 		}
 		
 		else if(newEntry.onSecond != ""){
-			$('#data' + playerEntryIndex).html("<img class='summaryField' src='onSecond.jpg'>");
+			$('#data' + playerEntryIndex).html("<img class='summaryField' src= 'images/onSecond.jpg'>");
 		}
 		
 		else if(newEntry.onFirst != ""){
-			$('#data' + playerEntryIndex).html("<img class='summaryField' src='onFirst.jpg'>");
+			$('#data' + playerEntryIndex).html("<img class='summaryField' src= 'images/onFirst.jpg'>");
 		}
 		
 		else{
-			$('#data' + playerEntryIndex).html("<img class='summaryField' src='fieldSummary.jpg'>");
+			$('#data' + playerEntryIndex).html("<img class='summaryField' src= 'images/fieldSummary.jpg'>");
 		}
 		$('#data'+ playerEntryIndex).append("<div>Balls: "+ newEntry.balls +"</div>");
 		$('#data'+ playerEntryIndex).append("<div>Strikes: "+ newEntry.strikes +"</div>");
